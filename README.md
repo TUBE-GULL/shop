@@ -7,7 +7,7 @@
  <!-- non-transparent background-->
  <!-- https://w7.pngwing.com/pngs/626/157/png-transparent-sqlite-database-logo-sql-feather-brand.png -->
    <!--FastAPI-->
-<a href="https://fastapi.tiangolo.com/" target="FastAPI" rel="noreferrer"> <img src="https://www.sqlite.org/images/sqlite370_banner.gif" alt="FastAPI" width="60" height="60"/> </a>
+<a href="https://fastapi.tiangolo.com/" target="FastAPI" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/156354296?s=200&v=4" alt="FastAPI" width="60" height="60"/> </a>
 
 <a href="https://www.sqlite.org/index.html" target="_blank" rel="noreferrer"> <img src="https://github.com/devicons/devicon/blob/master/icons/sqlite/sqlite-original-wordmark.svg" alt="python" width="60" height="60"/> </a>
 

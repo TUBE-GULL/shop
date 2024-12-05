@@ -15,7 +15,7 @@
  </div>
  <!-- https://www.sqlite.org/images/sqlite370_banner.gif -->
 
-https://avatars.githubusercontent.com/u/156354296?s=200&v=4
+
 ##  Visual scheme
 
 ![Image ](git/image/Screenshot%20from%202024-12-03%2014-57-10.png)

@@ -24,6 +24,17 @@ class DataBase:
                 ''')
             await db.commit()
 
+            try:
+                await db.execute("ALTER TABLE data_users ADD COLUMN role TEXT DEFAULT '0'")
+                await db.commit()
+                print('column role add successful')
+            except aiosqlite.Error as e:
+                if "duplicate column name" in str(e).lower():
+                    print("Колонка 'role' в users уже существует.")
+                else:
+                    print(f"Ошибка при добавлении колонки 'url_image': {e}")
+                    
+                    
     async def create_table_admin(self):
         async with aiosqlite.connect(self.db_name) as db:
             await db.execute('''
@@ -33,40 +44,66 @@ class DataBase:
                 );
                 ''')
             await db.commit()
+            
+            try:
+                await db.execute("ALTER TABLE data_admin ADD COLUMN role TEXT DEFAULT '1'")
+                await db.commit()
+                print('column role add successful')
+            except aiosqlite.Error as e:
+                if "duplicate column name" in str(e).lower():
+                    print("Колонка 'role' в admin уже существует.")
+                else:
+                    print(f"Ошибка при добавлении колонки 'url_image': {e}")
+                    
+
 
     async def create_table_card(self):
         async with aiosqlite.connect(self.db_name) as db:
+            # Создаем таблицу, если она еще не существует
             await db.execute('''
-                CREATE TABLE IF NOT EXISTS data_card(s
+                CREATE TABLE IF NOT EXISTS data_card(
                     name TEXT,
                     "group" TEXT,  
                     price INTEGER,
                     unit TEXT,
                     quantity INTEGER  
                 );
-                ''')
+            ''')
             await db.commit()
+
+           
+            try:
+                await db.execute('ALTER TABLE data_card ADD COLUMN url_image TEXT;')
+                await db.commit()
+                print("Колонка 'url_image' успешно добавлена.")
+            except aiosqlite.Error as e:
+                # Игнорируем ошибку, если колонка уже существует
+                if "duplicate column name" in str(e).lower():
+                    print("Колонка 'url_image' уже существует.")
+                else:
+                    print(f"Ошибка при добавлении колонки 'url_image': {e}")
+
 
     
     async def add_user_database_in_table(self, table_name: str, user_name: str, password: str):
         """
         Добавляет нового пользователя в указанную таблицу базы данных, если его еще нет.
-    
+
         Функция проверяет уникальность пользователя по имени (`user_name`) в таблице базы данных. 
         Если пользователь с таким именем уже существует, новая запись не будет добавлена.
-    
+
         :param table_name: Имя таблицы, в которую нужно добавить пользователя.
         :type table_name: str
         :param user_name: Имя пользователя, которое нужно сохранить в таблице.
         :type user_name: str
         :param password: Пароль пользователя, который будет сохранен в таблице.
         :type password: str
-        
+
         :return: 
             - `True`, если пользователь был успешно добавлен.
             - `False`, если пользователь с таким именем уже существует или произошла ошибка.
         :rtype: bool
-        
+
         :raises:
             - Печатает сообщение об ошибке, если возникает ошибка при работе с базой данных.
         """
@@ -77,7 +114,7 @@ class DataBase:
                     (user_name, password)
                 )
                 await db.commit()
-    
+
                 # Проверяем, была ли добавлена строка
                 if cursor.rowcount > 0:
                     print(f"Пользователь '{user_name}' успешно добавлен.")
@@ -85,7 +122,7 @@ class DataBase:
                 else:
                     print(f"Пользователь '{user_name}' уже существует.")
                     return False
-    
+
         except aiosqlite.Error as e:
             print(f"Ошибка при добавлении пользователя '{user_name}': {e}")
             return False

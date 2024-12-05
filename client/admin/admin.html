@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+
+<body>
+    <h1>Admin Panel</h1>
+
+    <h2>Add Product</h2>
+    <form action="/admin/add" method="POST">
+        <label for="name">Product Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="group">Group:</label><br>
+        <input type="text" id="group" name="group" required><br>
+
+        <label for="price">Price:</label><br>
+        <input type="number" id="price" name="price" required><br>
+
+        <label for="unit">Unit:</label><br>
+        <input type="text" id="unit" name="unit" required><br>
+
+        <label for="quantity">Quantity:</label><br>
+        <input type="number" id="quantity" name="quantity" required><br>
+
+        <input type="submit" value="Add Product">
+    </form>
+
+    <h2>Products List</h2>
+    <table>
+        <tr>
+            <th>Product Name</th>
+            <th>Group</th>
+            <th>Price</th>
+            <th>Unit</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product[1] }}</td>
+            <td>{{ product[2] }}</td>
+            <td>{{ product[3] }}</td>
+            <td>{{ product[4] }}</td>
+            <td>{{ product[5] }}</td>
+            <td>
+                <a href="/admin/delete/{{ product[0] }}">Delete</a> |
+                <a href="/admin/update/{{ product[0] }}">Update Quantity</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="/admin/r">add new account Admin</a>
+</body>
+
+</html>

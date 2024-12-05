@@ -14,3 +14,4 @@ async def add_product(trash: Trash):
 async def delete_product(trash: Trash):
     print(trash)
     
+    

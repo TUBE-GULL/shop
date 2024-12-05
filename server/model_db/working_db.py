@@ -18,42 +18,44 @@ class DataBase:
         async with aiosqlite.connect(self.db_name) as db:
             await db.execute(''' 
                     CREATE TABLE IF NOT EXISTS data_users(
+                    role TEXT DEFAULT '0',
                     user_name TEXT UNIQUE NOT NULL,
                     password TEXT NOT NULL
                 );
                 ''')
             await db.commit()
 
-            try:
-                await db.execute("ALTER TABLE data_users ADD COLUMN role TEXT DEFAULT '0'")
-                await db.commit()
-                print('column role add successful')
-            except aiosqlite.Error as e:
-                if "duplicate column name" in str(e).lower():
-                    print("Колонка 'role' в users уже существует.")
-                else:
-                    print(f"Ошибка при добавлении колонки 'url_image': {e}")
+            # try:
+            #     await db.execute("ALTER TABLE data_users ADD COLUMN role TEXT DEFAULT '0'")
+            #     await db.commit()
+            #     print('column role add successful')
+            # except aiosqlite.Error as e:
+            #     if "duplicate column name" in str(e).lower():
+            #         print("Колонка 'role' в users уже существует.")
+            #     else:
+            #         print(f"Ошибка при добавлении колонки 'url_image': {e}")
                     
                     
     async def create_table_admin(self):
         async with aiosqlite.connect(self.db_name) as db:
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS data_admin(
+                    role TEXT DEFAULT '1',
                     user_name TEXT,
                     password TEXT  
                 );
                 ''')
             await db.commit()
             
-            try:
-                await db.execute("ALTER TABLE data_admin ADD COLUMN role TEXT DEFAULT '1'")
-                await db.commit()
-                print('column role add successful')
-            except aiosqlite.Error as e:
-                if "duplicate column name" in str(e).lower():
-                    print("Колонка 'role' в admin уже существует.")
-                else:
-                    print(f"Ошибка при добавлении колонки 'url_image': {e}")
+            # try:
+            #     await db.execute("ALTER TABLE data_admin ADD COLUMN role TEXT DEFAULT '1'")
+            #     await db.commit()
+            #     print('column role add successful')
+            # except aiosqlite.Error as e:
+            #     if "duplicate column name" in str(e).lower():
+            #         print("Колонка 'role' в admin уже существует.")
+            #     else:
+                    # print(f"Ошибка при добавлении колонки 'url_image': {e}")
                     
 
 
@@ -62,6 +64,8 @@ class DataBase:
             # Создаем таблицу, если она еще не существует
             await db.execute('''
                 CREATE TABLE IF NOT EXISTS data_card(
+                    id_product INTEGER PRIMARY KEY AUTOINCREMENT,
+                    url_image TEXT,
                     name TEXT,
                     "group" TEXT,  
                     price INTEGER,
@@ -72,16 +76,16 @@ class DataBase:
             await db.commit()
 
            
-            try:
-                await db.execute('ALTER TABLE data_card ADD COLUMN url_image TEXT;')
-                await db.commit()
-                print("Колонка 'url_image' успешно добавлена.")
-            except aiosqlite.Error as e:
-                # Игнорируем ошибку, если колонка уже существует
-                if "duplicate column name" in str(e).lower():
-                    print("Колонка 'url_image' уже существует.")
-                else:
-                    print(f"Ошибка при добавлении колонки 'url_image': {e}")
+            # try:
+            #     await db.execute('ALTER TABLE data_card ADD COLUMN url_image TEXT;')
+            #     await db.commit()
+            #     print("Колонка 'url_image' успешно добавлена.")
+            # except aiosqlite.Error as e:
+            #     # Игнорируем ошибку, если колонка уже существует
+            #     if "duplicate column name" in str(e).lower():
+            #         print("Колонка 'url_image' уже существует.")
+            #     else:
+            #         print(f"Ошибка при добавлении колонки 'url_image': {e}")
 
 
     
@@ -191,4 +195,37 @@ class DataBase:
                 else:
                     return None
                 
-        
+    async def add_card(self, image: str, name: str, group: str, price: int, unit: str, quantity: int):
+        print('activate add_card')
+        try:
+            async with aiosqlite.connect(self.db_name) as db:
+                # Вставляем запись, не указывая id_product, так как оно будет автоматически сгенерировано
+                await db.execute("""
+                                 INSERT OR IGNORE INTO data_card (url_image, name, "group", price, unit, quantity)
+                                 VALUES (?, ?, ?, ?, ?, ?)
+                                 """, (image, name, group, price, unit, quantity)
+                )
+                await db.commit()
+            return True
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
+
+
+    async def get_all_data(self):
+        try:
+            async with aiosqlite.connect(self.db_name) as db:
+                # Выполняем запрос для получения всех данных из таблицы
+                cursor = await db.execute("SELECT * FROM data_card")
+                rows = await cursor.fetchall()  # Получаем все строки результата
+                await cursor.close()  # Закрываем курсор
+
+                # Возвращаем данные в виде списка словарей (опционально)
+                columns = [description[0] for description in cursor.description]
+                data = [dict(zip(columns, row)) for row in rows]
+
+                return data
+        except Exception as e:
+            print(f"Error fetching data: {e}")
+            return []
+

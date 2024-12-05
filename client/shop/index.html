@@ -14,28 +14,57 @@
         }
 
         h1 {
-            text-align: left;
-            padding-left: 2.5vh;
-        }
-
-        .shop {
-            height: 90vh;
-            width: 90vh;
-            margin: 0 auto;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
         }
 
         .shop h2 {
             text-align: center;
         }
+
+        .shop {
+            display: block;
+            height: 90vh;
+            width: 90vh;
+            margin: 0 auto;
+            justify-content: center;
+            align-items: center;
+
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 10px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        .product-card h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .product-card p {
+            margin: 8px 0;
+        }
     </style>
+    <!-- <link rel="stylesheet" href="../client/shop/style.css"> -->
+    <!-- <link rel="stylesheet" href="/static/style.css"> -->
 </head>
 
 <body>
@@ -43,8 +72,51 @@
 
     <div class="shop">
         <h2>Product</h2>
+        <div class="products" id="products"></div>
 
+        <script>
+            // Запрос к серверу для получения товаров
+            async function fetchProducts() {
+                try {
+                    const response = await fetch('/shop/products');
+                    const products = await response.json();
+                    displayProducts(products);
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                }
+            }
+
+            // Отображение товаров в виде карточек
+            function displayProducts(products) {
+                print(products)
+                const shopContainer = document.getElementById('products');
+                shopContainer.innerHTML = '';
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+
+                    productCard.innerHTML = `
+                        <img src="${product.image_url}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>Цена: $${product.price}</p>
+                        <button onclick="addToCart(${product.id})">Add to Cart</button>
+                    `;
+
+                    shopContainer.appendChild(productCard);
+                });
+            }
+
+            // Пример функции для добавления товара в корзину
+            function addToCart(productId) {
+                console.log(`Product ${productId} added to cart`);
+            }
+
+            // Загружаем товары при загрузке страницы
+            fetchProducts();
+        </script>
     </div>
 </body>
+<!-- <script src="/static/script.js"></script> -->
 
 </html>

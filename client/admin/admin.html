@@ -5,57 +5,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .admin {
+            height: 90vh;
+            width: 90vh;
+            margin: 0 auto;
+            display: flex;
+        }
+
+        .add_product {
+            width: 50%;
+            display: block;
+        }
+
+        .products_list {
+            width: 50%;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Admin Panel</h1>
-
-    <h2>Add Product</h2>
-    <form action="/admin/add" method="POST">
-        <label for="name">Product Name:</label><br>
-        <input type="text" id="name" name="name" required><br>
-
-        <label for="group">Group:</label><br>
-        <input type="text" id="group" name="group" required><br>
-
-        <label for="price">Price:</label><br>
-        <input type="number" id="price" name="price" required><br>
-
-        <label for="unit">Unit:</label><br>
-        <input type="text" id="unit" name="unit" required><br>
-
-        <label for="quantity">Quantity:</label><br>
-        <input type="number" id="quantity" name="quantity" required><br>
-
-        <input type="submit" value="Add Product">
-    </form>
-
-    <h2>Products List</h2>
-    <table>
-        <tr>
-            <th>Product Name</th>
-            <th>Group</th>
-            <th>Price</th>
-            <th>Unit</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        {% for product in products %}
-        <tr>
-            <td>{{ product[1] }}</td>
-            <td>{{ product[2] }}</td>
-            <td>{{ product[3] }}</td>
-            <td>{{ product[4] }}</td>
-            <td>{{ product[5] }}</td>
-            <td>
-                <a href="/admin/delete/{{ product[0] }}">Delete</a> |
-                <a href="/admin/update/{{ product[0] }}">Update Quantity</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
     <a href="/admin/r">add new account Admin</a>
+
+    <div class="admin">
+
+        <div class="add_product">
+            <h2>Add Product</h2>
+            <form action="/admin/add_product" method="POST">
+                <label for="name">Product Name:</label><br>
+                <input type="text" id="name" name="name" required><br>
+
+                <label for="group">Group:</label><br>
+                <input type="text" id="group" name="group" required><br>
+
+                <label for="price">Price:</label><br>
+                <input type="number" id="price" name="price" required><br>
+
+                <label for="unit">Unit:</label><br>
+                <input type="text" id="unit" name="unit" required><br>
+
+                <label for="quantity">Quantity:</label><br>
+                <input type="number" id="quantity" name="quantity" required><br>
+
+                <label for="image">Product Image:</label><br>
+                <input type="file" id="image" name="image" accept="image/*" required><br>
+
+                <button type="submit" value="Add Product" class="btn">send</button>
+                <!-- <input type="submit" value="Add Product"> -->
+            </form>
+
+        </div>
+
+
+
+        <div class="products_list">
+            <h2>Products List</h2>
+            <script>
+
+                async function fetchProducts() {
+                    try {
+                        const response = await fetch('/shop/products');
+                        const products = await response.json();
+                        displayProducts(products);
+                    } catch (error) {
+                        console.error('Error fetching products:', error);
+                    }
+                }
+
+                function displayProducts(products) {
+                    const shopContainer = document.getElementById('products');
+                    shopContainer.innerHTML = '';
+
+                    products.forEach(product => {
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-card';
+
+                        productCard.innerHTML = `
+                            <img src="${product.image_url}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p>Price: $${product.price}</p>
+                            <button onclick="addToCart(${product.id})">Add to Cart</button>
+                        `;
+
+                        shopContainer.appendChild(productCard);
+                    });
+                }
+
+
+                function addToCart(productId) {
+                    console.log(`Product ${productId} added to cart`);
+                }
+
+                fetchProducts();
+            </script>
+
+        </div>
+
+    </div>
 </body>
 
 </html>

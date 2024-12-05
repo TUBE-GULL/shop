@@ -1,8 +1,15 @@
 from fastapi import APIRouter, HTTPException, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from model_db.working_db import DataBase
+
 
 shop = APIRouter()
+db = DataBase()
+
+static_path = Path(__file__).parent.parent.parent / "client/shop"
+shop.mount("/static", StaticFiles(directory=static_path), name="static")
 
 # Проверка текущего пользователя
 def get_current_user(request: Request):
@@ -53,3 +60,8 @@ def account_page(request: Request, current_user: str = Depends(get_current_user)
     return HTMLResponse(content=html_content)
 
 
+@shop.get("/shop/products")
+async def get_products():
+    products = await db.get_all_data()        
+    return products
+ 
